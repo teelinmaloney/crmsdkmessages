@@ -1,0 +1,50 @@
+extends layout
+
+block content
+  style
+    #messages {
+      float: left;
+      margin-right: 1em;
+      width: 300px;
+    }
+    pre {
+      margin-left: 300px;
+    }
+    textarea {
+      height: 200px;
+      width: 100%;
+    }
+  h1= title
+  div
+    input#copyios(type='button', value='Copy for iOS')
+    input#copyjsjoin(type='button', value='Copy for JavaScript')
+  div
+    select#messages(size=40)
+      each message in messages
+        option #{message}
+    pre
+      code#code.language-markup
+  div
+    textarea#copytext
+  script
+    $('pre').height($('#messages').height() - 17);
+    $('#messages').change(function() {
+        $.get('/' + this.value, function(res) {
+            $('#code').text(res);
+            Prism.highlightAll();
+        });
+    });
+
+    $('#copyios').click(function() {
+        var xml = $('#code').text();
+        xml = xml.replace(/(\r|\n|\r\n){2,}/gm, '').replace(/(^\s*<)/gm, '"<').replace(/(>$)/gm, '$1"');
+        console.log(xml);
+        $('#copytext').text(xml);
+    });
+
+    $('#copyjsjoin').click(function() {
+        var xml = $('#code').text();
+        xml = xml.replace(/(\r|\n|\r\n){2,}/gm, "").replace(/(^\s*<)/gm, "'<").replace(/(>$)/gm, "$1',");
+        console.log(xml);
+        $('#copytext').text(xml);
+    });
